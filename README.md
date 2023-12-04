@@ -39,6 +39,10 @@ The project consists of separate files for handling database operations [`intern
 
 The `models` package in the application serves as a pivotal component, providing structured data representations for key entities involved in the study scheduling and completion process. These entities include participants, questionnaires, scheduled questionnaires, and questionnaire results.
 
+They represent the following database structure:
+
+![Database structure](assets/db-layout-diagram.png)
+
 The `Participant` structure represents an individual participating in a study, characterized by a unique identifier (`ID`) and a name. 
 
 Questionnaires, the core instruments for collecting study data, are modeled by the `Questionnaire` structure. This structure includes details such as the questionnaire's ID, associated study ID, name, question configurations, maximum attempts, and scheduling parameters.
