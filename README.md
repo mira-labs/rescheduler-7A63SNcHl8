@@ -193,7 +193,7 @@ The util.go file provides utility functions for the application. It specifically
    * Send SQS message confirming creation.
    * If not, a "completion" SQS message is sent.
      
-   I'm assuming the SQS messages have to be sent only after the database events are completed, therefore no goroutines are used between them.
+    I assume that the message for creating the SQS schedule should only be sent once the database events are finished. Hence, no goroutines are employed in this context. On the other hand, the completion message does not need to wait for any other processes; it can be handled asynchronously in a goroutine.
 
    ```go
    if event.RemainingCompletions > 0 || !questionnaire.MaxAttempts.Valid {
@@ -235,7 +235,9 @@ The util.go file provides utility functions for the application. It specifically
 			}()
 
 		} else {
-			sqsHandler.SendCompletionMessage(event.UserID)
+			go func() {
+				sqsHandler.SendCompletionMessage(event.UserID)
+			}()
 		}
    ```
 
