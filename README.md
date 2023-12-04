@@ -14,6 +14,20 @@ Because the setup for lambda integration is not known, certain assumptions have 
 * The `StudyID` field, even though present in the event data, does not serve as an identifier for the questionnaire. As a result, it is not required to be utilized in the lookup functions.
 * The application does not manage the count of remaining attempts since this information is included in the event data.
 
+## Installation
+
+```bash
+
+# Building the binary
+make build
+
+# Cleaning up
+make clean
+
+# Running
+./bin/main
+```
+
 ## Architecture
 
 I have taken an __Onion__ approach following some of the Domain-Driven Design (DDD) principles separating the domain, presentation, application, and infrastructure layers. 
@@ -70,7 +84,7 @@ The `UnmarshalJSON` method implements JSON unmarshalling specifically for the `T
 
 #### [`internals/util/util.go`](./internals/util/util.go)
 
-The util.go file provides utility functions for the application. It specifically contains the ConvertJSONToEvent function, which facilitates the conversion of a JSON string into a `models.QuestionnaireCompletedEvent` struct. This utility is essential for handling incoming JSON data, such as questionnaire completion events, and converting it into a structured format that can be used within the application.
+The util.go file provides utility functions for the application. It specifically contains the `ConvertJSONToEvent` function, which facilitates the conversion of a JSON string into a `models.QuestionnaireCompletedEvent` struct. This utility is essential for handling incoming JSON data, such as questionnaire completion events, and converting it into a structured format that can be used within the application.
 
 
 ## Rescheduler Application Logic Overview
@@ -100,14 +114,15 @@ The util.go file provides utility functions for the application. It specifically
     ```
 4. Database Stores
    
-   Instances of the database stores (questionnaireStore, scheduledQuestionnaireStore, questionnaireResultStore) are created using the initialized database connection.
+   Instances of the database stores (`questionnaireStore`, `scheduledQuestionnaireStore`, `questionnaireResultStore`) are created using the initialized database connection.
+   `ParticipantStore` despite being implemented is not used because in this example there are no operations on participants in the business logic layer.
    
     ```go
     questionnaireStore := store.NewQuestionnaireStore(db)
     scheduledQuestionnaireStore := store.NewScheduledQuestionnaireStore(db)
     questionnaireResultStore := store.NewQuestionnaireResultStore(db)
     ```
-5. Channel Initialization
+6. Channel Initialization
 
     Two channels are created for synchronization:
        * `resultCh`: To receive the results of finding the questionnaire and schedule.
@@ -120,7 +135,7 @@ The util.go file provides utility functions for the application. It specifically
     })
     errorCh := make(chan error)
      ```
-6. Concurrent Tasks
+7. Concurrent Tasks
 
     A goroutine is spawned to concurrently find both the questionnaire and the schedule.
     If an error occurs during any of these tasks, the error is sent to the `errorCh`. If both tasks are successful, the results are sent to the `resultCh`.
@@ -147,10 +162,10 @@ The util.go file provides utility functions for the application. It specifically
         }{questionnaire, schedule}
     }()
     ```
-7. Channel Selection
+8. Channel Selection
    
    The select statement is used to wait for either the successful completion of finding both the questionnaire and schedule `(resultCh)` or an error `(errorCh)`.
-   Also the first operation is to set the questionnaire status to `complete`.
+   Also, the first operation is to set the questionnaire status to `complete`.
 
    ```go
     select {
@@ -167,12 +182,13 @@ The util.go file provides utility functions for the application. It specifically
                 }
             }()
 
-8. Checking if a new schedule can be created
+9. Checking if a new schedule can be created
    * Are there any more attempts left or is there no limit (`max_attempts` field in the database is NULL)?
    * If that's the case, create a new schedule `questionnaire.HoursBetweenAttempts` after `event.CompletedAt`
-   * Sent SQS message confirming creation
-   * If not a "completion" SQS message is sent
-   I'm assuming the SQS have to be sent only after the database events are completed, therefore no goroutines are used between them.
+   * Send SQS message confirming creation.
+   * If not, a "completion" SQS message is sent.
+     
+   I'm assuming the SQS messages have to be sent only after the database events are completed, therefore no goroutines are used between them.
 
    ```go
    if event.RemainingCompletions > 0 || !questionnaire.MaxAttempts.Valid {
@@ -218,8 +234,8 @@ The util.go file provides utility functions for the application. It specifically
 		}
    ```
 
-9. Create a questionnaire result record.
-   This is done asynchronously as this happens regardless of the results of the previous one.
+10. Create a questionnaire result record.
+   This is done asynchronously as this happens regardless of the results of the previous step.
 
      ```go
             // Create a questionnaire result asynchronously
@@ -239,7 +255,7 @@ The util.go file provides utility functions for the application. It specifically
                 }
             }()
             ```
-10. Return the successful response
+11. Return the successful response
     ```go
             return events.APIGatewayProxyResponse{
                 Body:       fmt.Sprintf("Success"),
@@ -247,7 +263,7 @@ The util.go file provides utility functions for the application. It specifically
             }, nil
     ```
 
-11. Handle the top-level errors that occurred during finding the schedule or questionnaire
+12. Handle the top-level errors that occurred during finding the schedule or questionnaire
      
     ```go
         case err := <-errorCh:
@@ -259,18 +275,6 @@ The util.go file provides utility functions for the application. It specifically
         }
     ```
 
-## Installation
 
-```bash
-
-# Building the binary
-make build
-
-# Cleaning up
-make clean
-
-#Ruunning
-./bin/main
-```
 
 
