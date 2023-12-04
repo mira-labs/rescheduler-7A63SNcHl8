@@ -13,6 +13,7 @@ Because the setup for lambda integration is not known, certain assumptions have 
 * The SQS URL and AWS region are hardcoded for demonstration purposes.
 * The `StudyID` field, even though present in the event data, does not serve as an identifier for the questionnaire. As a result, it is not required to be utilized in the lookup functions.
 * The application does not manage the count of remaining attempts since this information is included in the event data.
+* This implementation does not use GORM or any other ORM-like package or framework as the number of models and database operations is tiny.
 
 ## Installation
 
