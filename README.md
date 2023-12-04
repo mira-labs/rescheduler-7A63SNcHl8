@@ -41,7 +41,7 @@ The `models` package in the application serves as a pivotal component, providing
 
 They represent the following database structure:
 
-![Database structure](assets/db-layout-diagram.png)
+![Database structure](assets/db-structure-layout.png)
 
 The `Participant` structure represents an individual participating in a study, characterized by a unique identifier (`ID`) and a name. 
 
