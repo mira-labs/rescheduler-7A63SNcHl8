@@ -8,7 +8,7 @@ It uses various internal packages for database operations, SQS messaging, and ut
 
 Because the setup for lambda integration is not known, certain assumptions have been made:
 
-* Lambda fuunction returns a `APIGatewayProxyResponse` http response through `github.com/aws/aws-lambda-go/events`
+* Lambda function returns a `APIGatewayProxyResponse` HTTP response through `github.com/aws/aws-lambda-go/events`
 * The `credentials.MySQLDbDsn()` method from `umotif.com/go/credentials` package is used for obtaining database connection credentials.
 * The SQS URL and AWS region are hardcoded for demonstration purposes.
 * The `StudyID` field, even though present in the event data, does not serve as an identifier for the questionnaire. As a result, it is not required to be utilized in the lookup functions.
@@ -16,7 +16,7 @@ Because the setup for lambda integration is not known, certain assumptions have 
 
 ## Architecture
 
-I have taken an __Onion__ approach following some of the Domain-Driven Design (DDD) principles separating the domain, presentation, application and infrastructure layers. 
+I have taken an __Onion__ approach following some of the Domain-Driven Design (DDD) principles separating the domain, presentation, application, and infrastructure layers. 
 
 The project consists of separate files for handling database operations [`internals/database/database.go`](internals/database/database.go), interacting with data stores, and handling Simple Queue Service (SQS) messaging ([`internals/sqs/sqs.go`](./internals/sqs/sqs.go).
 
@@ -36,7 +36,7 @@ In addition to these core structures, the `models` package features a `Questionn
 
 #### [`internals/database/database.go`](./internals/database/database.go)
 
-The database.go file defines a DatabaseConnection struct for configuring the database connection and an InitDB function for initializing a connection to a MySQL database. This file encapsulates the logic for establishing and validating the database connection, providing a clean and centralized way to manage database interactions throughout the application.
+The `database.go` file defines a `DatabaseConnection` struct for configuring the database connection and an `InitDB` function for initializing a connection to a MySQL database. This file encapsulates the logic for establishing and validating the database connection, providing a clean and centralized way to manage database interactions throughout the application.
 
 
 ### Package `store`
@@ -53,7 +53,7 @@ These files are responsible for interacting with specific entities in the databa
 
 #### [`internals/sqs/sqs.go`](./internals/sqs/sqs.go)
 
-This file handles SQS messaging, providing an abstraction for sending messages to an SQS queue. It defines a SQSHandler type that encapsulates the logic for sending completion and new schedule messages to the SQS queue. 
+This file handles SQS messaging, providing an abstraction for sending messages to an SQS queue. It defines a `SQSHandler` type that encapsulates the logic for sending completion and new schedule messages to the SQS queue. 
 
 
 ### Package `timestamp`
@@ -149,7 +149,7 @@ The util.go file provides utility functions for the application. It specifically
     ```
 7. Channel Selection
    
-   The select statement is used to wait for either the successful completion of finding both questionnaire and schedule `(resultCh)` or an error `(errorCh)`.
+   The select statement is used to wait for either the successful completion of finding both the questionnaire and schedule `(resultCh)` or an error `(errorCh)`.
    Also the first operation is to set the questionnaire status to `complete`.
 
    ```go
@@ -167,11 +167,11 @@ The util.go file provides utility functions for the application. It specifically
                 }
             }()
 
-8. Checking if new schedule can be creeated
-   * Are there any more attempts left or is there no limit (`max_attempts` fiels in the database is NULL)?
+8. Checking if a new schedule can be created
+   * Are there any more attempts left or is there no limit (`max_attempts` field in the database is NULL)?
    * If that's the case, create a new schedule `questionnaire.HoursBetweenAttempts` after `event.CompletedAt`
    * Sent SQS message confirming creation
-   * If not a completion SQS message is sent
+   * If not a "completion" SQS message is sent
    I'm assuming the SQS have to be sent only after the database events are completed, therefore no goroutines are used between them.
 
    ```go
@@ -219,7 +219,7 @@ The util.go file provides utility functions for the application. It specifically
    ```
 
 9. Create a questionnaire result record.
-   This is done asynchronously as this happens regsrdless of the results of the previous one.
+   This is done asynchronously as this happens regardless of the results of the previous one.
 
      ```go
             // Create a questionnaire result asynchronously
@@ -239,7 +239,7 @@ The util.go file provides utility functions for the application. It specifically
                 }
             }()
             ```
-10. Return the success response
+10. Return the successful response
     ```go
             return events.APIGatewayProxyResponse{
                 Body:       fmt.Sprintf("Success"),
@@ -247,7 +247,7 @@ The util.go file provides utility functions for the application. It specifically
             }, nil
     ```
 
-11. Handle the top level errors that occurred during finding schedule or questionnaire
+11. Handle the top-level errors that occurred during finding the schedule or questionnaire
      
     ```go
         case err := <-errorCh:
