@@ -18,7 +18,7 @@ Because the setup for lambda integration is not known, certain assumptions have 
 
 I have taken an __Onion__ approach following some of the Domain-Driven Design (DDD) principles separating the domain, presentation, application and infrastructure layers. 
 
-The project consists of separate files for handling database operations (`internals/database/database.go`), interacting with data stores, and handling Simple Queue Service (SQS) messaging ([`internals/sqs/sqs.go`](`./internals/sqs/sqs.go`)).
+The project consists of separate files for handling database operations [`internals/database/database.go`](internals/database/database.go), interacting with data stores, and handling Simple Queue Service (SQS) messaging ([`internals/sqs/sqs.go`](./internals/sqs/sqs.go).
 
 ### Package `models`
 
