@@ -188,7 +188,9 @@ func LambdaHandler(ctx context.Context, event *models.QuestionnaireCompletedEven
 			}()
 
 		} else {
-			sqsHandler.SendCompletionMessage(event.UserID)
+			go func() {
+				sqsHandler.SendCompletionMessage(event.UserID)
+			}()
 		}
 
 		// Create a questionnaire result asynchronously
