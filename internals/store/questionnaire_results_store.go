@@ -1,5 +1,5 @@
-// Package database provides functionality to interact with the database for the rescheduler application.
-package database
+// Package store provides functionality to interact with the database for the rescheduler application.
+package store
 
 import (
 	"database/sql"
