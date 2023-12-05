@@ -13,6 +13,7 @@ type ScheduledQuestionnaireStoreInterface interface {
 	FindScheduledQuestionnaireByQuestionnaireIDAndUserIDAndStudyID(questionnaireID, userID, studyID string) (*models.ScheduledQuestionnaire, error)
 	FindScheduledQuestionnaireByQuestionnaireIDAndUserID(questionnaireID string, userID string) (*models.ScheduledQuestionnaire, error)
 	SetScheduledQuestionnaireCompleted(scheduledQuestionnaire *models.ScheduledQuestionnaire) error
+	Create(scheduledQuestionnaire *models.ScheduledQuestionnaire) error
 }
 
 // ScheduledQuestionnaireStore implements ScheduledQuestionnaireStoreInterface and is responsible for handling scheduled questionnaire-related database operations.
@@ -81,7 +82,27 @@ func (scheduleStore *ScheduledQuestionnaireStore) SetScheduledQuestionnaireCompl
 	return err
 }
 
-func (scheduleStore *ScheduledQuestionnaireStore) CreateScheduledQuestionnaire(scheduledQuestionnaire *models.ScheduledQuestionnaire) error {
+// Create inserts a new scheduled questionnaire record into the database.
+// It takes a pointer to a ScheduledQuestionnaire struct and inserts its values
+// into the "scheduled_questionnaires" table. The function returns an error if
+// the database operation encounters any issues.
+//
+// Parameters:
+//   - scheduledQuestionnaire: A pointer to a ScheduledQuestionnaire struct
+//     containing the data to be inserted.
+//
+// Returns:
+//   - error: An error indicating the success or failure of the database operation.
+//
+// Database Table Schema:
+//   - Table Name: scheduled_questionnaires
+//   - Columns:
+//   - id (string): Unique identifier for the scheduled questionnaire.
+//   - questionnaire_id (string): Identifier of the associated questionnaire.
+//   - participant_id (string): Identifier of the participant assigned to the questionnaire.
+//   - scheduled_at (string): Scheduled time of the questionnaire in RFC3339 format.
+//   - status (string): Status of the scheduled questionnaire (e.g., "pending" or "completed").
+func (scheduleStore *ScheduledQuestionnaireStore) Create(scheduledQuestionnaire *models.ScheduledQuestionnaire) error {
 	query := "INSERT INTO scheduled_questionnaires (id, questionnaire_id, participant_id, scheduled_at, status) VALUES (?, ?, ?, ?, ?)"
 
 	_, err := scheduleStore.db.Exec(query,

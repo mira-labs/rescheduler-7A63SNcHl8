@@ -218,12 +218,12 @@ The util.go file provides utility functions for the application. It specifically
 					QuestionnaireID: questionnaire.ID,
 					ParticipantID:   event.UserID,
 					ScheduledAt:     nextScheduledTime,
-					Status:          "pending",
+					Status:          models.ScheduledQuestionnairePending,
 				}
 				fmt.Println("Created a new Scheduled Questionnaire:", newScheduledQuestionnaire.ID)
 
 				// Save the new schedule
-				err := scheduledQuestionnaireStore.CreateScheduledQuestionnaire(&newScheduledQuestionnaire)
+				err := scheduledQuestionnaireStore.Create(&newScheduledQuestionnaire)
 				if err != nil {
 					fmt.Println("Error: ", err)
 				}
@@ -256,7 +256,7 @@ The util.go file provides utility functions for the application. It specifically
                     CompletedAt:             event.CompletedAt,
                 }
 
-                err := questionnaireResultStore.CreateQuestionnaireResult(&questionnaireResult)
+                err := questionnaireResultStore.Create(&questionnaireResult)
                 if err != nil {
                     fmt.Println("Error creating questionnaire result: ", err)
                 }
