@@ -23,7 +23,7 @@ func NewQuestionnaireResultStore(db *sql.DB) *QuestionnaireResultStore {
 }
 
 // CreateQuestionnaireResult creates a new questionnaire result in the database.
-func (qrs *QuestionnaireResultStore) CreateQuestionnaireResult(result *models.QuestionnaireResult) error {
+func (qrs *QuestionnaireResultStore) Create(result *models.QuestionnaireResult) error {
 
 	query := "INSERT INTO questionnaire_results (id, answers, questionnaire_id, participant_id, questionnaire_schedule_id, completed_at) VALUES (?, ?, ?, ?, ?, ?)"
 
