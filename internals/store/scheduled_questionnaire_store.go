@@ -75,6 +75,25 @@ func (scheduleStore *ScheduledQuestionnaireStore) FindScheduledQuestionnaireByQu
 	return &scheduledQuestionnaire, nil
 }
 
+// Update modifies the fields of an existing scheduled questionnaire record in the database.
+// It takes a pointer to a ScheduledQuestionnaire struct and updates the corresponding
+// record in the "scheduled_questionnaires" table based on the unique identifier (ID).
+// The function returns an error if the database operation encounters any issues.
+//
+// Parameters:
+//   - scheduledQuestionnaire: A pointer to a ScheduledQuestionnaire struct containing the updated data.
+//
+// Returns:
+//   - error: An error indicating the success or failure of the database operation.
+//
+// Database Table Schema:
+//   - Table Name: scheduled_questionnaires
+//   - Columns:
+//   - id (string): Unique identifier for the scheduled questionnaire.
+//   - questionnaire_id (string): Identifier of the associated questionnaire.
+//   - participant_id (string): Identifier of the participant for whom the questionnaire is scheduled.
+//   - scheduled_at (time.Time): Timestamp indicating when the questionnaire is scheduled.
+//   - status (string): Status of the scheduled questionnaire (e.g., "pending" or "completed").
 func (scheduleStore *ScheduledQuestionnaireStore) Update(scheduledQuestionnaire *models.ScheduledQuestionnaire) error {
 	query := "UPDATE scheduled_questionnaires SET questionnaire_id = ?, participant_id = ?, scheduled_at = ?, status = ? WHERE id = ?"
 	_, err := scheduleStore.db.Exec(query, scheduledQuestionnaire.QuestionnaireID, scheduledQuestionnaire.ParticipantID, scheduledQuestionnaire.ScheduledAt, scheduledQuestionnaire.Status, scheduledQuestionnaire.ID)
