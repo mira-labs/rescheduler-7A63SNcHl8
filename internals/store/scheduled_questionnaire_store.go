@@ -12,7 +12,7 @@ import (
 type ScheduledQuestionnaireStoreInterface interface {
 	FindScheduledQuestionnaireByQuestionnaireIDAndUserIDAndStudyID(questionnaireID, userID, studyID string) (*models.ScheduledQuestionnaire, error)
 	FindScheduledQuestionnaireByQuestionnaireIDAndUserID(questionnaireID string, userID string) (*models.ScheduledQuestionnaire, error)
-	SetScheduledQuestionnaireCompleted(scheduledQuestionnaire *models.ScheduledQuestionnaire) error
+	Update(scheduledQuestionnaire *models.ScheduledQuestionnaire) error
 	Create(scheduledQuestionnaire *models.ScheduledQuestionnaire) error
 }
 
@@ -75,10 +75,9 @@ func (scheduleStore *ScheduledQuestionnaireStore) FindScheduledQuestionnaireByQu
 	return &scheduledQuestionnaire, nil
 }
 
-// SetScheduledQuestionnaireCompleted sets the status of a scheduled questionnaire to 'completed' in the database.
-func (scheduleStore *ScheduledQuestionnaireStore) SetScheduledQuestionnaireCompleted(scheduledQuestionnaire *models.ScheduledQuestionnaire) error {
-	query := "UPDATE scheduled_questionnaires SET status = 'completed' WHERE id = ?"
-	_, err := scheduleStore.db.Exec(query, scheduledQuestionnaire.ID)
+func (scheduleStore *ScheduledQuestionnaireStore) Update(scheduledQuestionnaire *models.ScheduledQuestionnaire) error {
+	query := "UPDATE scheduled_questionnaires SET questionnaire_id = ?, participant_id = ?, scheduled_at = ?, status = ? WHERE id = ?"
+	_, err := scheduleStore.db.Exec(query, scheduledQuestionnaire.QuestionnaireID, scheduledQuestionnaire.ParticipantID, scheduledQuestionnaire.ScheduledAt, scheduledQuestionnaire.Status, scheduledQuestionnaire.ID)
 	return err
 }
 

@@ -142,7 +142,8 @@ func LambdaHandler(ctx context.Context, event *models.QuestionnaireCompletedEven
 
 		// Update the schedule status to 'completed' asynchronously
 		go func() {
-			err := scheduledQuestionnaireStore.SetScheduledQuestionnaireCompleted(schedule)
+			schedule.Status = models.ScheduledQuestionnaireCompleted
+			err := scheduledQuestionnaireStore.Update(schedule)
 			if err != nil {
 				fmt.Println("Error updating schedule: ", err)
 			}
