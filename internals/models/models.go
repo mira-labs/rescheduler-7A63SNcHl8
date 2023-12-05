@@ -35,13 +35,20 @@ type Questionnaire struct {
 	HoursBetweenAttempts int           `json:"hours_between_attempts"`
 }
 
+type ScheduledQuestionnaireStatus string
+
+const (
+	ScheduledQuestionnairePending   = "pending"
+	ScheduledQuestionnaireCompleted = "completed"
+)
+
 // ScheduledQuestionnaire represents a scheduled questionnaire for a specific participant
 type ScheduledQuestionnaire struct {
-	ID              string              `json:"id"`
-	QuestionnaireID string              `json:"questionnaire_id"`
-	ParticipantID   string              `json:"participant_id"`
-	ScheduledAt     timestamp.TimeStamp `json:"scheduled_at"`
-	Status          string              `json:"status"`
+	ID              string                       `json:"id"`
+	QuestionnaireID string                       `json:"questionnaire_id"`
+	ParticipantID   string                       `json:"participant_id"`
+	ScheduledAt     timestamp.TimeStamp          `json:"scheduled_at"`
+	Status          ScheduledQuestionnaireStatus `json:"status"`
 }
 
 // QuestionnaireResult represents the results of a participant filling out a questionnaire

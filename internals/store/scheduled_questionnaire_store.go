@@ -30,8 +30,8 @@ func NewScheduledQuestionnaireStore(db *sql.DB) *ScheduledQuestionnaireStore {
 // An error is returned if there is an issue with the database query.
 // This again shouldn't need the studyID as it doesn't identify the questionnaire but it comes with the event data
 func (scheduleStore *ScheduledQuestionnaireStore) FindScheduledQuestionnaireByQuestionnaireIDAndUserIDAndStudyID(questionnaireID, userID, studyID string) (*models.ScheduledQuestionnaire, error) {
-	query := "SELECT * FROM scheduled_questionnaires WHERE questionnaire_id = ? AND participant_id = ? AND status = 'pending' AND study_id = ?"
-	row := scheduleStore.db.QueryRow(query, questionnaireID, userID, studyID)
+	query := "SELECT * FROM scheduled_questionnaires WHERE questionnaire_id = ? AND participant_id = ? AND status =?  AND study_id = ?"
+	row := scheduleStore.db.QueryRow(query, questionnaireID, userID, models.ScheduledQuestionnairePending, studyID)
 
 	var scheduledQuestionnaire models.ScheduledQuestionnaire
 	err := row.Scan(
@@ -55,8 +55,8 @@ func (scheduleStore *ScheduledQuestionnaireStore) FindScheduledQuestionnaireByQu
 // An error is returned if there is an issue with the database query.
 // This version omits studyID as this doesn't identify a scheduledQuestionnaire
 func (scheduleStore *ScheduledQuestionnaireStore) FindScheduledQuestionnaireByQuestionnaireIDAndUserID(questionnaireID string, userID string) (*models.ScheduledQuestionnaire, error) {
-	query := "SELECT * FROM scheduled_questionnaires WHERE questionnaire_id = ? AND participant_id = ? AND status = 'pending'"
-	row := scheduleStore.db.QueryRow(query, questionnaireID, userID)
+	query := "SELECT * FROM scheduled_questionnaires WHERE questionnaire_id = ? AND participant_id = ? AND status = ?"
+	row := scheduleStore.db.QueryRow(query, questionnaireID, userID, models.ScheduledQuestionnairePending)
 	var scheduledQuestionnaire models.ScheduledQuestionnaire
 	err := row.Scan(
 		&scheduledQuestionnaire.ID,
